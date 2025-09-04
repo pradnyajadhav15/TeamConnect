@@ -1,0 +1,413 @@
+/* Modern Video Meeting Component Styles */
+
+.meetVideoContainer {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+  color: var(--white);
+  overflow: hidden;
+}
+
+.meetVideoContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.meetVideoContainer > * {
+  position: relative;
+  z-index: 2;
+}
+
+.meetUserVideo {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  height: 180px;
+  width: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 3px solid var(--primary-color);
+  transition: all var(--transition-normal);
+  z-index: 10;
+}
+
+.meetUserVideo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.5);
+}
+
+.buttonContainers {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 20;
+}
+
+.buttonContainers button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-md);
+  color: var(--white);
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(10px);
+  min-width: 60px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonContainers button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--white);
+  transform: translateY(-2px);
+}
+
+.buttonContainers button.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+}
+
+.buttonContainers button.danger {
+  background: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.buttonContainers button.danger:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.buttonContainers svg {
+  font-size: 1.5rem;
+  transition: transform var(--transition-fast);
+}
+
+.buttonContainers button:hover svg {
+  transform: scale(1.1);
+}
+
+.conferenceView {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+  align-items: center;
+  justify-items: center;
+}
+
+.conferenceView video {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-normal);
+  background: var(--gray-800);
+}
+
+.conferenceView video:hover {
+  transform: scale(1.02);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+}
+
+.chatRoom {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 350px;
+  background: var(--white);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  z-index: 15;
+  transform: translateX(100%);
+  transition: transform var(--transition-normal);
+}
+
+.chatRoom.open {
+  transform: translateX(0);
+}
+
+.chatHeader {
+  padding: var(--spacing-lg);
+  background: var(--primary-color);
+  color: var(--white);
+  border-radius: var(--radius-lg) 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.chatHeader button {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.chatHeader button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.chatContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.chatMessage {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  max-width: 80%;
+  word-wrap: break-word;
+  animation: slideIn 0.3s ease-out;
+}
+
+.chatMessage.sent {
+  background: var(--primary-color);
+  color: var(--white);
+  align-self: flex-end;
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.chatMessage.received {
+  background: var(--gray-100);
+  color: var(--gray-900);
+  align-self: flex-start;
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.chatMessage .timestamp {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: var(--spacing-xs);
+}
+
+.chattingArea {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  border-radius: 0 0 0 var(--radius-lg);
+}
+
+.chatInput {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.chatInput input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.chatInput input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+.chatInput button {
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.chatInput button:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .conferenceView {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+  
+  .chatRoom {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .meetUserVideo {
+    height: 120px;
+    bottom: 100px;
+    right: 10px;
+  }
+  
+  .buttonContainers {
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .buttonContainers button {
+    min-width: 50px;
+    min-height: 50px;
+    padding: var(--spacing-sm);
+  }
+  
+  .buttonContainers svg {
+    font-size: 1.2rem;
+  }
+  
+  .conferenceView {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+  }
+  
+  .conferenceView video {
+    max-width: 100%;
+  }
+  
+  .chatRoom {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .meetUserVideo {
+    height: 100px;
+    bottom: 80px;
+    right: 5px;
+  }
+  
+  .buttonContainers {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+  
+  .buttonContainers button {
+    min-width: 45px;
+    min-height: 45px;
+    padding: var(--spacing-xs);
+  }
+  
+  .buttonContainers svg {
+    font-size: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Loading States */
+.videoLoading {
+  position: relative;
+  background: var(--gray-800);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.videoLoading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: loading 1.5s infinite;
+}
+
+/* Status Indicators */
+.statusIndicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+}
+
+.statusIndicator.online {
+  background: var(--success-color);
+}
+
+.statusIndicator.offline {
+  background: var(--error-color);
+}
+
+.statusIndicator.away {
+  background: var(--warning-color);
+}
