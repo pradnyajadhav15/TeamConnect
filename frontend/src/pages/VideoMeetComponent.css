@@ -1,0 +1,549 @@
+/* VideoMeetComponent.css - Modern Dark Theme */
+:root {
+  --primary-color: #8a2be2;
+  --primary-light: #9b4dff;
+  --primary-dark: #6a1cb9;
+  --secondary-color: #00bcd4;
+  --background-dark: #121212;
+  --surface-dark: #1e1e1e;
+  --surface-light: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --error-color: #cf6679;
+  --success-color: #00c853;
+  --warning-color: #ffab00;
+  --border-radius: 16px;
+  --transition-speed: 0.3s;
+}
+
+.video-meet-container {
+  height: 100vh;
+  background: linear-gradient(135deg, var(--background-dark) 0%, #1a1a2e 100%);
+  color: var(--text-primary);
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Modal Styles */
+.video-meet-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.video-meet-modal-content {
+  background: var(--surface-dark);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.5s ease-out;
+}
+
+.video-meet-modal-title {
+  margin: 0 0 2rem 0;
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.video-meet-username-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  box-sizing: border-box;
+  transition: all var(--transition-speed);
+  outline: none;
+}
+
+.video-meet-username-input:focus {
+  border-color: var(--primary-color);
+  background: rgba(138, 43, 226, 0.1);
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.3);
+}
+
+.video-meet-join-button {
+  width: 0%;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+}
+
+.video-meet-join-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
+}
+
+.video-meet-join-button:disabled {
+  background: #666;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Meeting Container */
+.video-meet-meeting-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+/* Video Grid */
+.video-meet-video-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+  overflow: auto;
+  align-content: center;
+}
+
+.video-meet-video-container {
+  position: relative;
+  background: var(--surface-light);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-speed);
+  aspect-ratio: 16/9;
+}
+
+.video-meet-video-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.video-meet-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: linear-gradient(45deg, #2c2c2c, #1a1a1a);
+}
+
+.video-meet-video-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.video-meet-username {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.video-meet-media-status {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.video-meet-status-icon {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Controls */
+.video-meet-controls {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  gap: 1rem;
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--border-radius);
+  margin: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-meet-control-button {
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.video-meet-control-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.video-meet-control-button.inactive {
+  background: rgba(207, 102, 121, 0.2);
+  color: var(--error-color);
+}
+
+.video-meet-control-button.active-screen-share {
+  background: rgba(0, 188, 212, 0.2);
+  color: var(--secondary-color);
+}
+
+.video-meet-end-call-button {
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #ff4757, #ff6b81);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all var(--transition-speed);
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+}
+
+.video-meet-end-call-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6);
+}
+
+/* Chat Panel */
+.video-meet-chat-panel {
+  position: absolute;
+  right: 2rem;
+  top: 2rem;
+  bottom: 8rem;
+  width: 350px;
+  background: var(--surface-dark);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  animation: slideInRight 0.4s ease-out;
+}
+
+.video-meet-chat-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(30, 30, 30, 0.9);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.video-meet-chat-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.video-meet-close-chat-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+}
+
+.video-meet-close-chat-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.video-meet-chat-messages {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(30, 30, 30, 0.5);
+}
+
+.video-meet-message {
+  padding: 1rem;
+  background: rgba(138, 43, 226, 0.1);
+  border-radius: var(--border-radius);
+  max-width: 80%;
+  align-self: flex-start;
+  border-left: 4px solid var(--primary-color);
+}
+
+.video-meet-message-sender {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--primary-light);
+  font-size: 0.9rem;
+}
+
+.video-meet-message-text {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.video-meet-message-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.video-meet-no-messages {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: 2rem;
+  font-style: italic;
+}
+
+.video-meet-chat-input-container {
+  display: flex;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 1rem;
+  background: rgba(30, 30, 30, 0.9);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.video-meet-chat-input {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all var(--transition-speed);
+  outline: none;
+}
+
+.video-meet-chat-input:focus {
+  border-color: var(--primary-color);
+  background: rgba(138, 43, 226, 0.1);
+}
+
+.video-meet-send-button {
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  border: none;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  min-width: 80px;
+}
+
+.video-meet-send-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+}
+
+.video-meet-send-button:disabled {
+  background: #666;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .video-meet-video-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 968px) {
+  .video-meet-controls {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  
+  .video-meet-control-button {
+    min-width: 100px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .video-meet-chat-panel {
+    width: 300px;
+    right: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .video-meet-video-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .video-meet-controls {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .video-meet-control-button {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .video-meet-chat-panel {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    bottom: 6rem;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-meet-modal-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .video-meet-modal-title {
+    font-size: 1.5rem;
+  }
+  
+  .video-meet-video-container {
+    aspect-ratio: 4/3;
+  }
+  
+  .video-meet-control-button {
+    min-width: auto;
+    padding: 0.8rem;
+  }
+  
+  .video-meet-control-button span {
+    display: none;
+  }
+}
+
+/* Scrollbar Styling */
+.video-meet-chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.video-meet-chat-messages::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.video-meet-chat-messages::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.video-meet-chat-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Focus states for accessibility */
+.video-meet-control-button:focus,
+.video-meet-end-call-button:focus,
+.video-meet-send-button:focus,
+.video-meet-close-chat-button:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+.video-meet-username-input:focus,
+.video-meet-chat-input:focus {
+  outline: none;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.video-meet-control-button:disabled,
+.video-meet-send-button:disabled {
+  animation: pulse 1.5s ease-in-out infinite;
+}

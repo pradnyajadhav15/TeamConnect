@@ -1,110 +1,154 @@
-import React, { useContext, useState } from "react";
-import withAuth from "../utils/withAuth";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
-import "../App.css"; // keep only if you have custom styles
+import React, { useContext, useState } from 'react';
+import withAuth from '../utils/withAuth';
+import { useNavigate } from 'react-router-dom';
+import { Button, IconButton, TextField } from '@mui/material';
+import {
+  Restore as RestoreIcon,
+  History as HistoryIcon,
+  ExitToApp as ExitToAppIcon,
+  VideoCall as VideoCallIcon
+} from '@mui/icons-material';
+import { AuthContext } from '../contexts/AuthContext';
+import './HomeComponent.css'; // We'll create this CSS file
 
 function HomeComponent() {
-  const navigate = useNavigate();
-  const [meetingCode, setMeetingCode] = useState("");
-  const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const [meetingCode, setMeetingCode] = useState("");
+    const { addToUserHistory } = useContext(AuthContext);
 
-  const { addToUserHistory } = useContext(AuthContext);
+    const handleJoinVideoCall = async () => {
+        if (!meetingCode.trim()) {
+            alert("Please enter a meeting code");
+            return;
+        }
+        
+        try {
+            await addToUserHistory(meetingCode.trim());
+            navigate(`/${meetingCode.trim()}`);
+        } catch (error) {
+            console.error("Error joining meeting:", error);
+            alert("Failed to join meeting. Please try again.");
+        }
+    };
 
-  const handleJoinVideoCall = async () => {
-    if (!meetingCode.trim()) {
-      setError("Please enter a meeting code.");
-      return;
-    }
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/auth");
+    };
 
-    try {
-      await addToUserHistory(meetingCode);
-      navigate(`/${meetingCode}`);
-    } catch (err) {
-      console.error("Failed to join meeting:", err);
-      setError("Could not join meeting. Please try again.");
-    }
-  };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleJoinVideoCall();
+        }
+    };
 
-  return (
-    <>
-      {/* Navbar */}
-      <div className="navBar flex justify-between items-center p-4">
-        <h2 className="text-xl font-bold">TeamConnect</h2>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate("/history")}
-            className="btn btn-ghost flex items-center gap-2"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            History
-          </button>
+    const handleStartNewMeeting = () => {
+        const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+        navigate(`/${randomCode}`);
+    };
 
-          <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/auth");
-            }}
-            className="btn btn-primary"
-          >
-            Logout
-          </button>
+    return (
+        <div className="home-container">
+            {/* Navigation Bar */}
+            <nav className="home-nav">
+                <div className="nav-brand">
+                    <VideoCallIcon className="brand-icon" />
+                    <h2>TeamConnect</h2>
+                </div>
+
+                <div className="nav-actions">
+                    <IconButton 
+                        onClick={() => navigate("/history")}
+                        className="history-button"
+                        title="Meeting History"
+                        aria-label="Meeting History"
+                    >
+                        <HistoryIcon />
+                    </IconButton>
+                    
+                    <Button 
+                        onClick={handleLogout}
+                        className="logout-button"
+                        startIcon={<ExitToAppIcon />}
+                        aria-label="Logout"
+                    >
+                        Logout
+                    </Button>
+                </div>
+            </nav>
+
+            {/* Main Content */}
+            <main className="home-main">
+                <div className="hero-section">
+                    <div className="hero-content">
+                        <h1 className="hero-title">
+                            Premium Quality 
+                            <span className="accent-text"> Video Calls</span>
+                        </h1>
+                        
+                        <p className="hero-subtitle">
+                            Connect with crystal clear audio and video quality for your meetings and education needs
+                        </p>
+
+                        <div className="join-meeting-container">
+                            <TextField 
+                                value={meetingCode}
+                                onChange={(e) => setMeetingCode(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                label="Enter Meeting Code"
+                                variant="outlined"
+                                className="meeting-input"
+                                placeholder="e.g., ABC-DEF-GHI"
+                                fullWidth
+                            />
+                            
+                            <Button 
+                                onClick={handleJoinVideoCall}
+                                variant="contained"
+                                className="join-button"
+                                disabled={!meetingCode.trim()}
+                                size="large"
+                            >
+                                Join Meeting
+                            </Button>
+                        </div>
+
+                        <div className="divider">
+                            <span>OR</span>
+                        </div>
+
+                        <div className="action-buttons">
+                            <Button 
+                                variant="contained"
+                                onClick={handleStartNewMeeting}
+                                className="new-meeting-button"
+                                startIcon={<VideoCallIcon />}
+                                size="large"
+                            >
+                                Start New Meeting
+                            </Button>
+                        </div>
+                    </div>
+                    
+                    <div className="hero-visual">
+                        <img 
+                            src="/logo3.png" 
+                            alt="Video Call Illustration" 
+                            className="hero-image"
+                            onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'block';
+                            }}
+                        />
+                        <div className="image-fallback" style={{display: 'none'}}>
+                            <VideoCallIcon className="fallback-icon" />
+                            <p>Video Call</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-      </div>
-
-      {/* Meeting Container */}
-      <div className="meetContainer flex flex-col md:flex-row items-center justify-between p-6">
-        {/* Left Panel */}
-        <div className="leftPanel flex-1 space-y-4">
-          <h2 className="text-2xl font-semibold">
-            Providing Quality Video Call Just Like Quality Education
-          </h2>
-
-          <div className="flex gap-3">
-            <input
-              type="text"
-              placeholder="Enter Meeting Code"
-              value={meetingCode}
-              onChange={(e) => {
-                setMeetingCode(e.target.value);
-                setError("");
-              }}
-              className="form-input flex-1 px-3 py-2 border rounded-lg"
-              required
-            />
-            <button
-              onClick={handleJoinVideoCall}
-              className="btn btn-primary px-4"
-            >
-              Join Meeting
-            </button>
-          </div>
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        </div>
-
-        {/* Right Panel */}
-        <div className="rightPanel flex-1 flex justify-center">
-          <img
-            src="/logo3.png"
-            alt="TeamConnect Logo"
-            className="max-w-xs md:max-w-sm"
-          />
-        </div>
-      </div>
-    </>
-  );
+    );
 }
 
 export default withAuth(HomeComponent);

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders App component without crashing', () => {
+test('renders learn react link', () => {
   render(<App />);
-  const appElement = screen.getByRole('main', { hidden: true });
-  expect(appElement).toBeInTheDocument();
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
 });

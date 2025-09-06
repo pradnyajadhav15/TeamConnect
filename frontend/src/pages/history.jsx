@@ -1,20 +1,47 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
-import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import {
+  Card,
+  Box,
+  CardContent,
+  Button,
+  Typography,
+  IconButton,
+  Container,
+  Grid,
+  Chip,
+  CircularProgress,
+  Alert,
+  Paper
+} from '@mui/material';
+import {
+  Home as HomeIcon,
+  VideoCall as VideoCallIcon,
+  CalendarToday as CalendarIcon,
+  AccessTime as TimeIcon,
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
+import './History.css'; // We'll create this CSS file
 
 export default function History() {
   const { getHistoryOfUser } = useContext(AuthContext);
   const [meetings, setMeetings] = useState([]);
-
-  const routeTo = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetchHistory = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
       const history = await getHistoryOfUser();
-      setMeetings(history);
+      setMeetings(history || []);
     } catch (err) {
-      console.error("Failed to fetch history:", err);
-      // TODO: Show Snackbar for error
+      setError('Failed to load meeting history. Please try again.');
+      console.error('Error fetching history:', err);
+    } finally {
+      setLoading(false);
     }
   }, [getHistoryOfUser]);
 
@@ -22,58 +49,171 @@ export default function History() {
     fetchHistory();
   }, [fetchHistory]);
 
-  const formatDate = (dateString) => {
+  const formatDate = useCallback((dateString) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid date';
+      
+      return new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    } catch {
+      return 'Invalid date';
+    }
+  }, []);
+
+  const joinMeeting = useCallback((meetingCode) => {
+    navigate(`/${meetingCode}`);
+  }, [navigate]);
+
+  const getTimeAgo = useCallback((dateString) => {
     const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays > 0) {
+      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    } else {
+      return 'Just now';
+    }
+  }, []);
+
+  if (loading) {
+    return (
+      <Box className="loading-container">
+        <CircularProgress size={60} />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Loading your meeting history...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Meeting History</h1>
-        <button
-          onClick={() => routeTo("/home")}
-          className="btn btn-ghost flex items-center gap-2"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <Container maxWidth="lg" className="history-container">
+      {/* Header */}
+      <Paper elevation={2} className="history-header">
+        <Box className="header-content">
+          <Box className="header-title">
+            <IconButton 
+              onClick={() => navigate("/home")}
+              className="home-button"
+              aria-label="Go to home"
+              size="large"
+            >
+              <HomeIcon />
+            </IconButton>
+            <Typography variant="h4" component="h1" className="title">
+              Meeting History
+            </Typography>
+          </Box>
+          
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={fetchHistory}
+            disabled={loading}
+            className="refresh-button"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-          </svg>
-          Back to Home
-        </button>
-      </div>
+            Refresh
+          </Button>
+        </Box>
+        
+        <Typography variant="body1" color="text.secondary" className="subtitle">
+          Your recent video meeting sessions
+        </Typography>
+      </Paper>
 
-      <div className="grid gap-4">
-        {meetings.length > 0 ? (
-          meetings.map((e, i) => (
-            <div key={i} className="card">
-              <div className="card-header flex justify-between items-center">
-                <h3 className="card-title">Meeting Code: {e.meetingCode}</h3>
-                <span className="badge badge-primary">Completed</span>
-              </div>
-              <div className="card-content">
-                <p className="text-gray-600">Date: {formatDate(e.date)}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-gray-500">No meeting history found.</p>
-          </div>
-        )}
-      </div>
-    </div>
+      {/* Error Alert */}
+      {error && (
+        <Alert 
+          severity="error" 
+          onClose={() => setError(null)}
+          className="error-alert"
+        >
+          {error}
+        </Alert>
+      )}
+
+      {/* Empty State */}
+      {meetings.length === 0 && !loading && !error && (
+        <Paper elevation={2} className="empty-state">
+          <VideoCallIcon className="empty-icon" />
+          <Typography variant="h6" className="empty-title">
+            No meetings yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" className="empty-subtitle">
+            Your meeting history will appear here once you join or create meetings
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/home")}
+            className="empty-action"
+          >
+            Start a Meeting
+          </Button>
+        </Paper>
+      )}
+
+      {/* Meetings Grid */}
+      {meetings.length > 0 && (
+        <Grid container spacing={3} className="meetings-grid">
+          {meetings.map((meeting, index) => (
+            <Grid item xs={12} sm={6} md={4} key={meeting._id || index}>
+              <Card elevation={3} className="meeting-card">
+                <CardContent className="card-content">
+                  {/* Meeting Code */}
+                  <Box className="meeting-header">
+                    <Chip
+                      label={meeting.meetingCode}
+                      color="primary"
+                      variant="outlined"
+                      className="meeting-code"
+                    />
+                    <Chip
+                      label={getTimeAgo(meeting.date)}
+                      size="small"
+                      color="secondary"
+                      variant="filled"
+                    />
+                  </Box>
+
+                  {/* Date and Time */}
+                  <Box className="meeting-details">
+                    <Box className="detail-item">
+                      <CalendarIcon className="detail-icon" />
+                      <Typography variant="body2" color="text.secondary">
+                        {formatDate(meeting.date)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+
+                {/* Actions */}
+                <Box className="card-actions">
+                  <Button
+                    variant="contained"
+                    startIcon={<VideoCallIcon />}
+                    onClick={() => joinMeeting(meeting.meetingCode)}
+                    className="join-button"
+                    fullWidth
+                  >
+                    Join Again
+                  </Button>
+                </Box>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </Container>
   );
 }

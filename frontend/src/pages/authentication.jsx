@@ -1,189 +1,275 @@
-import * as React from "react";
+import React, { useState, useContext } from "react";
 import {
   Avatar,
   Button,
   CssBaseline,
   TextField,
+  Link,
   Paper,
   Box,
-  Grid,
   Typography,
   Snackbar,
-  CircularProgress,
+  Alert,
+  Tabs,
+  Tab,
+  Container
 } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import {
+  LockOutlined as LockOutlinedIcon,
+  VideoCall as VideoCallIcon
+} from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { AuthContext } from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext.jsx";
+import "./Authentication.css"; // We'll create this CSS file
 
-const defaultTheme = createTheme();
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="/">
+        TeamConnect
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+
+const defaultTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#FF9839',
+    },
+    secondary: {
+      main: '#64748b',
+    },
+  },
+  typography: {
+    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+  },
+});
+
+function TabPanel({ children, value, index, ...other }) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`auth-tabpanel-${index}`}
+      aria-labelledby={`auth-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
+    </div>
+  );
+}
 
 export default function Authentication() {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [error, setError] = React.useState("");
-  const [message, setMessage] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [tabValue, setTabValue] = useState(0);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const [formState, setFormState] = React.useState(0); // 0 = login, 1 = register
-  const [open, setOpen] = React.useState(false);
+  const { handleRegister, handleLogin } = useContext(AuthContext);
 
-  const { handleRegister, handleLogin } = React.useContext(AuthContext);
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    setError("");
+    setUsername("");
+    setPassword("");
+    setName("");
+  };
 
   const handleAuth = async () => {
-    setError("");
-    setLoading(true);
-
     try {
-      if (formState === 0) {
-        await handleLogin(username, password);
-      } else {
-        const result = await handleRegister(name, username, password);
-        setMessage(result);
-        setOpen(true);
-        setFormState(0);
+      if (tabValue === 0) {
+        let result = await handleLogin(username, password);
+      }
+      if (tabValue === 1) {
+        let result = await handleRegister(name, username, password);
+        console.log(result);
         setUsername("");
+        setMessage(result);
+        setOpenSnackbar(true);
+        setError("");
+        setTabValue(0);
         setPassword("");
-        setName("");
       }
     } catch (err) {
-      console.error(err);
-      const message =
-        err?.response?.data?.message || err?.message || "Something went wrong!";
+      console.log(err);
+      let message = err.response.data.message;
       setError(message);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleClose = () => setOpen(false);
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleAuth();
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Grid container component="main" sx={{ height: "100vh" }}>
+      <Box className="auth-container">
         <CssBaseline />
-
-        {/* Left Image */}
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: "url(https://source.unsplash.com/random?wallpapers)",
-            backgroundRepeat: "no-repeat",
-            backgroundColor: (t) =>
-              t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-
-        {/* Right Form */}
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-
-            {/* Toggle Buttons */}
-            <Box sx={{ mb: 2 }}>
-              <Button
-                variant={formState === 0 ? "contained" : "text"}
-                onClick={() => setFormState(0)}
-              >
-                Sign In
-              </Button>
-              <Button
-                variant={formState === 1 ? "contained" : "text"}
-                onClick={() => setFormState(1)}
-                sx={{ ml: 1 }}
-              >
-                Sign Up
-              </Button>
-            </Box>
-
-            {/* Form */}
-            <Box
-              component="form"
-              noValidate
-              sx={{ mt: 1 }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleAuth();
-              }}
-            >
-              {formState === 1 && (
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="fullname"
-                  label="Full Name"
-                  name="fullname"
-                  value={name}
-                  autoFocus
-                  onChange={(e) => setName(e.target.value)}
-                />
-              )}
-
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              {error && (
-                <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                  {error}
-                </Typography>
-              )}
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={loading || (!username || !password || (formState === 1 && !name))}
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : formState === 0 ? "Login" : "Register"}
-              </Button>
-            </Box>
+        
+        {/* Left Side - Hero Section */}
+        <Box className="auth-hero">
+          <Box className="hero-content">
+            <VideoCallIcon className="hero-icon" />
+            <Typography variant="h2" className="hero-title">
+              TeamConnect
+            </Typography>
+            <Typography variant="h5" className="hero-subtitle">
+              Premium video conferencing for teams and individuals
+            </Typography>
           </Box>
-        </Grid>
-      </Grid>
+        </Box>
 
-      <Snackbar
-        open={open}
-        autoHideDuration={4000}
-        message={message}
-        onClose={handleClose}
-      />
+        {/* Right Side - Auth Form */}
+        <Box className="auth-form-container">
+          <Paper elevation={6} className="auth-paper">
+            <Box className="auth-form-content">
+              <Avatar className="auth-avatar">
+                <LockOutlinedIcon />
+              </Avatar>
+              
+              <Typography component="h1" variant="h5" className="auth-title">
+                {tabValue === 0 ? "Sign In" : "Create Account"}
+              </Typography>
+
+              {/* Tabs */}
+              <Box className="auth-tabs">
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  variant="fullWidth"
+                  aria-label="auth tabs"
+                >
+                  <Tab label="Sign In" id="auth-tab-0" aria-controls="auth-tabpanel-0" />
+                  <Tab label="Sign Up" id="auth-tab-1" aria-controls="auth-tabpanel-1" />
+                </Tabs>
+              </Box>
+
+              {/* Error Message */}
+              {error && (
+                <Alert severity="error" className="error-alert">
+                  {error}
+                </Alert>
+              )}
+
+              {/* Form Content */}
+              <Box component="form" noValidate className="auth-form">
+                <TabPanel value={tabValue} index={0}>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="login-username"
+                    label="Username"
+                    name="username"
+                    value={username}
+                    autoComplete="username"
+                    autoFocus
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="login-password"
+                    value={password}
+                    autoComplete="current-password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={1}>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="register-name"
+                    label="Full Name"
+                    name="name"
+                    value={name}
+                    autoComplete="name"
+                    autoFocus
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="register-username"
+                    label="Username"
+                    name="username"
+                    value={username}
+                    autoComplete="username"
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="register-password"
+                    value={password}
+                    autoComplete="new-password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    helperText="Password must be at least 6 characters long"
+                  />
+                </TabPanel>
+
+                <Button
+                  type="button"
+                  fullWidth
+                  variant="contained"
+                  className="auth-button"
+                  onClick={handleAuth}
+                  size="large"
+                >
+                  {tabValue === 0 ? "Sign In" : "Create Account"}
+                </Button>
+              </Box>
+
+              <Copyright sx={{ mt: 4 }} />
+            </Box>
+          </Paper>
+        </Box>
+
+        {/* Snackbar for messages */}
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity="success"
+            className="snackbar-alert"
+          >
+            {message}
+          </Alert>
+        </Snackbar>
+      </Box>
     </ThemeProvider>
   );
 }

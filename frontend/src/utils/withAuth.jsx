@@ -1,36 +1,27 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom"
 
-const withAuth = (WrappedComponent) => {
-  const AuthComponent = (props) => {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
+const withAuth = (WrappedComponent ) => {
+    const AuthComponent = (props) => {
+        const router = useNavigate();
 
-    const isAuthenticated = () => {
-      const token = localStorage.getItem("token");
-      return token && token.length > 0; // Basic check for token presence
-    };
+        const isAuthenticated = () => {
+            if(localStorage.getItem("token")) {
+                return true;
+            } 
+            return false;
+        }
 
-    useEffect(() => {
-      if (!isAuthenticated()) {
-        navigate("/auth", { replace: true });
-      } else {
-        setLoading(false);
-      }
-    }, [navigate]);
+        useEffect(() => {
+            if(!isAuthenticated()) {
+                router("/auth")
+            }
+        }, [])
 
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center h-screen">
-          <p>Loading...</p>
-        </div>
-      );
+        return <WrappedComponent {...props} />
     }
 
-    return <WrappedComponent {...props} />;
-  };
-
-  return AuthComponent;
-};
+    return AuthComponent;
+}
 
 export default withAuth;

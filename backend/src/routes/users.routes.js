@@ -1,14 +1,16 @@
 import { Router } from "express";
-import { login, register } from "../controllers/user.controller.js";  // ✅ import controllers
+import {
+  login,
+  register,
+  getUserHistory,
+  addToHistory,
+} from "../controllers/user.controller.js";
 
 const router = Router();
 
-router.post("/login", login);
-router.post("/register", register);
-
-// If you plan to implement these later, you can import and add them too
-// import { addToActivity, getAllActivity } from "../controllers/user.controller.js";
-// router.post("/add_to_activity", addToActivity);
-// router.get("/get_all_activity", getAllActivity);
+router.route("/login").post(login);
+router.route("/register").post(register);
+router.route("/add_to_activity").post(addToHistory);
+router.route("/get_all_activity").get(getUserHistory);
 
 export default router;
